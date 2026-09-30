@@ -56,12 +56,6 @@ export default function Home() {
         >
           {t('home.cta')} <span aria-hidden="true">→</span>
         </Link>
-        <Link
-          href="/admin"
-          className="ml-4 text-sm font-medium text-[var(--muted)] underline underline-offset-4 hover:text-[var(--fg)]"
-        >
-          {t('admin.loginTitle')}
-        </Link>
       </section>
 
         <section aria-label={t('stats.total')} className="grid grid-cols-2 gap-4 pb-20 md:grid-cols-5">
