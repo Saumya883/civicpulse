@@ -1,0 +1,1 @@
+drop policy if exists "Allow public insert" on public.citizen_requests;

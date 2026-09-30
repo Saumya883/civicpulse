@@ -1,26 +1,156 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Ol+Chiki&family=Noto+Sans+Meetei+Mayek&display=swap');
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --bg: #fdf6f9;
+  --surface: #ffffff;
+  --border: #f1e2ea;
+  --fg: #3b3350;
+  --muted: #7c7394;
+  --btn: #f6a5b7;
+  --btn-fg: #4a2c3a;
+  --error-bg: #fff0f0;
+  --error-fg: #922b3e;
+  --card1: #ffe1ea;
+  --card2: #fff0c9;
+  --card3: #d9edff;
+  --card4: #e5dcff;
+  --card5: #d5f4e4;
+  --dot1: #f28aa5;
+  --dot2: #f0c04a;
+  --dot3: #6fb3ee;
+  --dot4: #a48cf0;
+  --dot5: #58c795;
+  --shadow: 0 4px 16px rgba(59, 51, 80, 0.08);
+  --hw: 800;
+}
+
+:root[data-theme="dark"] {
+  --bg: #1a2035;
+  --surface: #202940;
+  --border: rgba(255, 255, 255, 0.08);
+  --fg: #e8eaf6;
+  --muted: #9aa3c0;
+  --btn: #8e24aa;
+  --btn-fg: #ffffff;
+  --error-bg: #352534;
+  --error-fg: #ffd5e0;
+  --card1: #202940;
+  --card2: #202940;
+  --card3: #202940;
+  --card4: #202940;
+  --card5: #202940;
+  --dot1: #c9a8ed;
+  --dot2: #ffd166;
+  --dot3: #9cd9ff;
+  --dot4: #d2b6ff;
+  --dot5: #9ce4bd;
+  --shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+  --hw: 500;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
+  --color-background: var(--bg);
+  --color-foreground: var(--fg);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+body {
+  min-height: 100%;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: system-ui, 'Noto Sans Ol Chiki', 'Noto Sans Meetei Mayek', sans-serif;
+  transition: background-color 0.25s, color 0.25s;
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+.dashboard-title {
+  font-weight: var(--hw);
+}
+
+.card {
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: var(--surface);
+  box-shadow: var(--shadow);
+}
+
+.stat-card {
+  overflow: hidden;
+  box-shadow: var(--shadow);
+}
+
+.stat-total { background: var(--card1); }
+.stat-submitted { background: var(--card2); }
+.stat-review { background: var(--card3); }
+.stat-prioritized { background: var(--card4); }
+.stat-resolved { background: var(--card5); }
+
+.stat-card__value {
+  color: var(--fg);
+  font-size: 2.25rem;
+  font-weight: 600;
+  line-height: 1.1;
+}
+
+.stat-card__label {
+  color: var(--muted);
+  font-size: 0.875rem;
+}
+
+:root[data-theme="dark"] .stat-card {
+  border-color: transparent;
+  color: #ffffff;
+}
+
+:root[data-theme="dark"] .stat-card__value,
+:root[data-theme="dark"] .stat-card__label {
+  color: #ffffff;
+}
+
+:root[data-theme="dark"] .stat-total { background: linear-gradient(60deg, #ab47bc, #8e24aa); }
+:root[data-theme="dark"] .stat-submitted { background: linear-gradient(60deg, #26c6da, #00acc1); }
+:root[data-theme="dark"] .stat-review { background: linear-gradient(60deg, #ffa726, #fb8c00); }
+:root[data-theme="dark"] .stat-prioritized { background: linear-gradient(60deg, #ef5350, #e53935); }
+:root[data-theme="dark"] .stat-resolved { background: linear-gradient(60deg, #66bb6a, #43a047); }
+
+.stat-card__dot {
+  background: var(--dot1);
+}
+
+:root[data-theme="dark"] .stat-card__dot {
+  background: rgba(255, 255, 255, 0.78);
+}
+
+input,
+textarea,
+select {
+  border-color: var(--border);
+  background-color: var(--surface);
+  color: var(--fg);
+}
+
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  outline: 2px solid var(--btn);
+  outline-offset: 2px;
+}
+
+.error-message {
+  border-color: var(--border);
+  background: var(--error-bg);
+  color: var(--error-fg);
+}
+
+.theme-toggle__dark {
+  display: none;
+}
+
+:root[data-theme="dark"] .theme-toggle__light {
+  display: none;
+}
+
+:root[data-theme="dark"] .theme-toggle__dark {
+  display: inline;
 }

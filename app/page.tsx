@@ -1,69 +1,82 @@
-import Image from "next/image";
+'use client'
+
+import Link from 'next/link'
+import { useEffect, useState } from 'react'
+import { supabase } from '@/lib/supabase'
+import { useI18n } from '@/lib/i18n'
+import SiteHeader from '@/components/SiteHeader'
 
 export default function Home() {
+  const { t } = useI18n()
+  const [counts, setCounts] = useState<Record<string, number>>({})
+  const [isLoading, setIsLoading] = useState(true)
+  const [statsError, setStatsError] = useState(false)
+
+  useEffect(() => {
+    async function loadCounts() {
+      const { data, error } = await supabase.rpc('request_stats')
+      setIsLoading(false)
+      if (error) {
+        console.error('stats error', error)
+        setStatsError(true)
+        return
+      }
+
+      const nextCounts: Record<string, number> = {}
+      data?.forEach((row: { status: string; total: number | string }) => {
+        nextCounts[row.status] = Number(row.total)
+      })
+      setCounts(nextCounts)
+    }
+
+    void loadCounts()
+  }, [])
+
+  const total = Object.values(counts).reduce((sum, count) => sum + count, 0)
+  const cards = [
+    { label: t('stats.total'), value: total, n: 1, kind: 'stat-total' },
+    { label: t('status.submitted'), value: counts.submitted ?? 0, n: 2, kind: 'stat-submitted' },
+    { label: t('status.under_review'), value: counts.under_review ?? 0, n: 3, kind: 'stat-review' },
+    { label: t('status.prioritized'), value: counts.prioritized ?? 0, n: 4, kind: 'stat-prioritized' },
+    { label: t('status.resolved'), value: counts.resolved ?? 0, n: 5, kind: 'stat-resolved' },
+  ]
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert h-5 w-[100px]"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the{" "}
-            <code className="rounded bg-black/[.06] px-1.5 py-0.5 font-mono text-[0.9em] dark:bg-white/[.08]">
-              page.tsx
-            </code>{" "}
-            file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
+    <main className="min-h-screen bg-[var(--bg)] text-[var(--fg)]">
+      <div className="mx-auto max-w-5xl px-6">
+        <SiteHeader />
+
+        <section className="pb-12 pt-14">
+        <h1 className="dashboard-title max-w-3xl text-4xl leading-tight sm:text-6xl">{t('home.title')}</h1>
+        <p className="mt-5 max-w-xl text-lg text-[var(--muted)]">{t('home.subtitle')}</p>
+        <Link
+          href="/report"
+          className="mt-9 inline-block rounded-md px-8 py-3 font-semibold shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"
+          style={{ background: 'var(--btn)', color: 'var(--btn-fg)' }}
+        >
+          {t('home.cta')} <span aria-hidden="true">→</span>
+        </Link>
+      </section>
+
+        <section aria-label={t('stats.total')} className="grid grid-cols-2 gap-4 pb-20 md:grid-cols-5">
+          {cards.map((card) => (
+            <div
+              key={card.n}
+              className={`card stat-card ${card.kind} p-5 transition hover:-translate-y-1`}
             >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+              <span className="stat-card__dot mb-4 block h-2 w-2 rounded-full" />
+              <div className="stat-card__value dashboard-title">{card.value}</div>
+              <div className="stat-card__label mt-1">{card.label}</div>
+            </div>
+          ))}
+        </section>
+
+        {(statsError || isLoading) && (
+          <p role={statsError ? 'alert' : 'status'} className="pb-8 text-sm text-[var(--muted)]">
+            {statsError ? t('home.statsError') : t('home.loading')}
           </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert h-[14px] w-4"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
-  );
+        )}
+      </div>
+    </main>
+  )
 }
